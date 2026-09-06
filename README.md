@@ -55,7 +55,11 @@ python app.py
 
 ## Deploy on Render (free)
 
-This repo includes a `Procfile` and `render.yaml` for one-click deployment.
+This repo includes a `Procfile`, `render.yaml` and a `.python-version` pin for
+one-click deployment. `.python-version` pins **Python 3.11**, which is the
+highest Python where `pandas==2.1.4` / `numpy==1.26.2` / `scikit-learn==1.3.2`
+ship prebuilt Linux wheels — Render then installs them from wheels instead of
+compiling pandas from source (avoids the Cython/ninja build failure).
 `app.py` loads the model at import time and uses the `PORT` env var, so it works
 under gunicorn on Render out of the box.
 

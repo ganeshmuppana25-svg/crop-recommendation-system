@@ -1,5 +1,7 @@
 # Render Blueprint - one-click deploy for the Crop Recommendation System.
 # Set this up from dashboard.render.com -> "New +" -> "Blueprint" -> paste this repo.
+# Python version is pinned via .python-version (3.11) so no package needs to be
+# compiled from source (all have prebuilt wheels; avoids the Cython/ninja failure).
 services:
   - type: web
     name: crop-recommendation-system
@@ -7,4 +9,4 @@ services:
     plan: free
     healthCheckPath: /api/health
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
