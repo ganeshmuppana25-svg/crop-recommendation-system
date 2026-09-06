@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crop Recommendation System</title>
+  <script>
+    /* Apply saved theme before first paint (prevents flash). */
+    (function () {
+      try {
+        var t = localStorage.getItem("crs_theme");
+        if (t !== "light" && t !== "dark") {
+          t = (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+        }
+        document.documentElement.setAttribute("data-theme", t);
+      } catch (e) { /* keep default */ }
+    })();
+  </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <!-- ============ SVG icon sprite (self-contained, offline-safe) ============ -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <defs>
+      <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></symbol>
+      <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></symbol>
+      <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol>
+      <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0z"/></symbol>
+      <symbol id="i-flask" viewBox="0 0 24 24"><path d="M4.5 3h15"/><path d="M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3"/><path d="M6 14h12"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+      <symbol id="i-rain" viewBox="0 0 24 24"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6M8 14v6M12 16v6"/></symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M8 17v-6M13 17V7M18 17v-3"/></symbol>
+      <symbol id="i-tree" viewBox="0 0 24 24"><path d="M6 3v12"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></symbol>
+      <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/><path d="M1 14h6M9 8h6M17 16h6"/></symbol>
+      <symbol id="i-robot" viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="12" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="3.5" r="1.5"/><path d="M9 13h.01M15 13h.01"/><path d="M9 17h6"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+      <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></symbol>
+      <symbol id="i-wheat" viewBox="0 0 24 24"><path d="M2 22 16 8"/><path d="M3.5 12.5 5 11l1.5 1.5a3 3 0 0 1 0 4.2L5 18.2l-1.5-1.5a3 3 0 0 1 0-4.2Z"/><path d="M8 8l1.5-1.5L11 8a3 3 0 0 1 0 4.2L9.5 13.7 8 12.2a3 3 0 0 1 0-4.2Z"/><path d="M12.5 3.5 14 2l1.5 1.5a3 3 0 0 1 0 4.2L14 9.2l-1.5-1.5a3 3 0 0 1 0-4.2Z"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- Subtle floating background decor (agricultural, very low-key) -->
+  <div class="bg-decor" aria-hidden="true">
+    <svg class="deco deco-1"><use href="#i-leaf"/></svg>
+    <svg class="deco deco-2"><use href="#i-sprout"/></svg>
+    <span class="deco deco-3"></span>
+    <span class="deco deco-4"></span>
+  </div>
+
+  <div class="container">
+
+    <!-- ================= Header ================= -->
+    <header class="site-header">
+      <div class="brand">
+        <span class="brand-mark"><svg class="icon"><use href="#i-sprout"/></svg></span>
+        <div class="brand-text">
+          <h1>Crop Recommendation System</h1>
+          <p class="tagline">Decision Tree &middot; 22 crops &middot; 7 soil &amp; weather features</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span id="health-banner" class="status-pill"><span class="dot"></span>Checking model status&hellip;</span>
+        <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle light / dark mode" title="Toggle light / dark mode">
+          <svg class="icon icon-sun"><use href="#i-sun"/></svg>
+          <svg class="icon icon-moon"><use href="#i-moon"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ================= Hero ================= -->
+    <section class="hero card">
+      <div class="hero-text">
+        <h2><svg class="icon accent"><use href="#i-leaf"/></svg> Smart crop advice from your soil &amp; weather</h2>
+        <p>
+          Enter soil and weather conditions below. A Decision Tree model, trained on
+          2,200 soil/weather samples across 22 crops, recommends the most suitable crop
+          with a confidence score. All predictions come from the trained model &mdash;
+          no manual rules.
+        </p>
+      </div>
+      <div class="hero-flow" aria-hidden="true">
+        <span class="chip"><svg class="icon"><use href="#i-flask"/></svg> 7 inputs</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="chip"><svg class="icon"><use href="#i-robot"/></svg> Flask API</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="chip"><svg class="icon"><use href="#i-tree"/></svg> Decision Tree</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="chip chip-accent"><svg class="icon"><use href="#i-wheat"/></svg> Result</span>
+      </div>
+    </section>
+
+    <!-- ================= Input form ================= -->
+    <section class="card" id="input-section">
+      <h2 class="section-title"><svg class="icon"><use href="#i-sprout"/></svg> Soil &amp; Weather Conditions</h2>
+
+      <div class="preset-row">
+        <span class="preset-label">Demo presets <em>(fill values only &mdash; prediction always comes from the model)</em>:</span>
+        <div class="preset-btns">
+          <button type="button" class="preset-btn" data-crop="rice"><span class="preset-emoji">&#127807;</span> Rice Conditions</button>
+          <button type="button" class="preset-btn" data-crop="maize"><span class="preset-emoji">&#127805;</span> Maize Conditions</button>
+          <button type="button" class="preset-btn" data-crop="coffee"><span class="preset-emoji">&#9749;</span> Coffee Conditions</button>
+          <button type="button" class="preset-btn" data-crop="banana"><span class="preset-emoji">&#127820;</span> Tropical Conditions</button>
+          <button type="button" class="preset-btn" data-crop="mango"><span class="preset-emoji">&#127822;</span> Fruit Crop Conditions</button>
+        </div>
+      </div>
+
+      <form id="predict-form" novalidate>
+        <div class="inputs-grid" id="inputs-grid">
+          <!-- 7 slider fields injected by script.js -->
+        </div>
+        <div class="actions">
+          <button type="submit" id="recommend-btn" class="primary-btn">
+            <svg class="icon"><use href="#i-wheat"/></svg><span class="btn-label">Recommend Crop</span>
+          </button>
+          <button type="button" id="reset-btn" class="secondary-btn">
+            <svg class="icon"><use href="#i-refresh"/></svg><span class="btn-label">Reset</span>
+          </button>
+        </div>
+      </form>
+      <p id="form-error" class="error-msg hidden"></p>
+    </section>
+
+    <!-- ================= Result ================= -->
+    <section class="card" id="result-section">
+      <h2 class="section-title"><svg class="icon"><use href="#i-wheat"/></svg> Recommendation Result</h2>
+
+      <!-- Loading stepper (shown while predicting) -->
+      <div id="predict-stepper" class="stepper hidden" aria-live="polite">
+        <div class="step" data-step="1"><span class="step-dot"></span>Analyzing Conditions</div>
+        <div class="step-arrow">&rarr;</div>
+        <div class="step" data-step="2"><span class="step-dot"></span>Decision Tree</div>
+        <div class="step-arrow">&rarr;</div>
+        <div class="step" data-step="3"><span class="step-dot"></span>Generating Recommendation</div>
+      </div>
+
+      <!-- Empty state (before the first prediction) -->
+      <div id="result-empty" class="empty-state">
+        <span class="empty-icon"><svg class="icon"><use href="#i-sprout"/></svg></span>
+        <p><strong>No prediction yet.</strong></p>
+        <p class="muted-text">Enter your soil and weather conditions above (or click a preset), then press <em>Recommend Crop</em>.</p>
+      </div>
+
+      <!-- Result content -->
+      <div id="result-content" class="hidden">
+        <div class="result-main">
+          <div class="crop-identity">
+            <span class="crop-medallion" id="crop-medallion"><svg class="icon"><use href="#i-wheat"/></svg></span>
+            <div>
+              <p class="result-label">Recommended Crop</p>
+              <p id="result-crop" class="result-crop">&mdash;</p>
+            </div>
+          </div>
+          <div class="confidence-box">
+            <p class="result-label">Confidence</p>
+            <p id="result-confidence" class="result-confidence">&mdash;</p>
+            <div class="confidence-track"><div id="confidence-bar" class="confidence-bar" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <h3 class="sub-title"><svg class="icon"><use href="#i-award"/></svg> Top 3 Recommendations <span class="title-hint">(actual model probabilities)</span></h3>
+        <ol id="top3-list" class="top3-list"></ol>
+
+        <h3 class="sub-title"><svg class="icon"><use href="#i-sliders"/></svg> Entered Input Summary</h3>
+        <div id="input-summary" class="summary-grid"></div>
+
+        <h3 class="sub-title"><svg class="icon"><use href="#i-leaf"/></svg> About the Recommended Crop</h3>
+        <p id="crop-info" class="muted-text info-text"></p>
+
+        <h3 class="sub-title"><svg class="icon"><use href="#i-robot"/></svg> Why This Prediction? <span class="title-hint">(model explanation)</span></h3>
+        <p id="explanation" class="muted-text info-text"></p>
+
+        <h3 class="sub-title"><svg class="icon"><use href="#i-chart"/></svg> Feature Importance <span class="title-hint">(Decision Tree)</span></h3>
+        <div id="result-feature-importance" class="importance-list"></div>
+      </div>
+    </section>
+
+    <!-- ================= Model performance ================= -->
+    <section class="card">
+      <h2 class="section-title"><svg class="icon"><use href="#i-chart"/></svg> Model Performance</h2>
+      <p class="muted-text section-note">
+        Metrics below are computed on the 20% test set (440 samples) during training &mdash;
+        they are not hardcoded.
+      </p>
+      <div id="metrics-grid" class="metrics-grid">
+        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+      </div>
+
+      <h3 class="sub-title"><svg class="icon"><use href="#i-chart"/></svg> Feature Importance <span class="title-hint">(whole tree)</span></h3>
+      <div id="global-feature-importance" class="importance-list"></div>
+    </section>
+
+    <!-- ================= Dataset info ================= -->
+    <section class="card">
+      <h2 class="section-title"><svg class="icon"><use href="#i-flask"/></svg> Dataset Information</h2>
+      <div id="dataset-summary" class="kpi-grid"></div>
+      <h3 class="sub-title"><svg class="icon"><use href="#i-sprout"/></svg> Classes <span class="title-hint">(crops)</span></h3>
+      <p id="dataset-classes" class="muted-text info-text"></p>
+      <details class="ranges-details">
+        <summary><svg class="icon"><use href="#i-sliders"/></svg> Valid input ranges <span class="title-hint">(from dataset)</span></summary>
+        <div id="dataset-ranges" class="summary-grid"></div>
+      </details>
+    </section>
+
+    <!-- ================= How it works ================= -->
+    <section class="card">
+      <h2 class="section-title"><svg class="icon"><use href="#i-tree"/></svg> How It Works</h2>
+      <div class="flow">
+        <div class="flow-step">
+          <span class="flow-icon"><svg class="icon"><use href="#i-sprout"/></svg></span>
+          <strong>Soil &amp; Weather</strong>
+          <span class="flow-desc">7 input values</span>
+        </div>
+        <span class="flow-connector" aria-hidden="true"></span>
+        <div class="flow-step">
+          <span class="flow-icon"><svg class="icon"><use href="#i-sliders"/></svg></span>
+          <strong>Data Processing</strong>
+          <span class="flow-desc">Flask validation</span>
+        </div>
+        <span class="flow-connector" aria-hidden="true"></span>
+        <div class="flow-step">
+          <span class="flow-icon"><svg class="icon"><use href="#i-tree"/></svg></span>
+          <strong>Decision Tree</strong>
+          <span class="flow-desc">trained model</span>
+        </div>
+        <span class="flow-connector" aria-hidden="true"></span>
+        <div class="flow-step">
+          <span class="flow-icon"><svg class="icon"><use href="#i-wheat"/></svg></span>
+          <strong>Crop Recommendation</strong>
+          <span class="flow-desc">crop + confidence</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= History ================= -->
+    <section class="card">
+      <div class="history-header">
+        <h2 class="section-title"><svg class="icon"><use href="#i-clock"/></svg> Prediction History</h2>
+        <button type="button" id="clear-history-btn" class="secondary-btn small">
+          <svg class="icon"><use href="#i-alert"/></svg><span class="btn-label">Clear History</span>
+        </button>
+      </div>
+      <p class="muted-text section-note">History is stored in your browser (localStorage) only.</p>
+      <div id="history-list"></div>
+    </section>
+
+    <footer>
+      <p><svg class="icon"><use href="#i-leaf"/></svg> Crop Recommendation System &mdash; Phase 2 (ML + Flask demo). Educational use only.</p>
+    </footer>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,532 @@
+{
+  "dataset": {
+    "rows": 2200,
+    "columns": [
+      "N",
+      "P",
+      "K",
+      "temperature",
+      "humidity",
+      "ph",
+      "rainfall",
+      "label"
+    ],
+    "dtypes": {
+      "N": "int64",
+      "P": "int64",
+      "K": "int64",
+      "temperature": "float64",
+      "humidity": "float64",
+      "ph": "float64",
+      "rainfall": "float64",
+      "label": "object"
+    },
+    "missing_values": 0,
+    "duplicates_removed": 0,
+    "n_features": 7,
+    "features": [
+      "N",
+      "P",
+      "K",
+      "temperature",
+      "humidity",
+      "ph",
+      "rainfall"
+    ],
+    "target": "label",
+    "n_classes": 22,
+    "classes": [
+      "apple",
+      "banana",
+      "blackgram",
+      "chickpea",
+      "coconut",
+      "coffee",
+      "cotton",
+      "grapes",
+      "jute",
+      "kidneybeans",
+      "lentil",
+      "maize",
+      "mango",
+      "mothbeans",
+      "mungbean",
+      "muskmelon",
+      "orange",
+      "papaya",
+      "pigeonpeas",
+      "pomegranate",
+      "rice",
+      "watermelon"
+    ],
+    "class_distribution": {
+      "apple": 100,
+      "banana": 100,
+      "blackgram": 100,
+      "chickpea": 100,
+      "coconut": 100,
+      "coffee": 100,
+      "cotton": 100,
+      "grapes": 100,
+      "jute": 100,
+      "kidneybeans": 100,
+      "lentil": 100,
+      "maize": 100,
+      "mango": 100,
+      "mothbeans": 100,
+      "mungbean": 100,
+      "muskmelon": 100,
+      "orange": 100,
+      "papaya": 100,
+      "pigeonpeas": 100,
+      "pomegranate": 100,
+      "rice": 100,
+      "watermelon": 100
+    },
+    "feature_stats": {
+      "N": {
+        "min": 0.0,
+        "max": 140.0,
+        "mean": 50.55
+      },
+      "P": {
+        "min": 5.0,
+        "max": 145.0,
+        "mean": 53.36
+      },
+      "K": {
+        "min": 5.0,
+        "max": 205.0,
+        "mean": 48.15
+      },
+      "temperature": {
+        "min": 8.83,
+        "max": 43.68,
+        "mean": 25.62
+      },
+      "humidity": {
+        "min": 14.26,
+        "max": 99.98,
+        "mean": 71.48
+      },
+      "ph": {
+        "min": 3.5,
+        "max": 9.94,
+        "mean": 6.47
+      },
+      "rainfall": {
+        "min": 20.21,
+        "max": 298.56,
+        "mean": 103.46
+      }
+    }
+  },
+  "model": {
+    "type": "DecisionTreeClassifier",
+    "params": {
+      "random_state": 42,
+      "min_samples_leaf": 8,
+      "ccp_alpha": 0.003
+    },
+    "test_size": 0.2,
+    "random_state": 42,
+    "train_rows": 1760,
+    "test_rows": 440,
+    "tree_depth": 12,
+    "tree_leaves": 25,
+    "sklearn_version": "1.3.2",
+    "trained_at": "2026-09-06T06:12:10.677450+00:00"
+  },
+  "metrics": {
+    "accuracy": 0.975,
+    "precision_weighted": 0.9772,
+    "recall_weighted": 0.975,
+    "f1_weighted": 0.9745,
+    "per_class_report": {
+      "apple": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 20.0
+      },
+      "banana": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 20.0
+      },
+      "blackgram": {
+        "precision": 1.0,
+        "recall": 0.7,
+        "f1-score": 0.8235294117647058,
+        "support": 20.0
+      },
+      "chickpea": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 20.0
+      },
+      "coconut": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 20.0
+      },
+      "coffee": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 20.0
+      },
+      "cotton": {
+        "precision": 0.9523809523809523,
+        "recall": 1.0,
+        "f1-score": 0.975609756097561,
+        "support": 20.0
+      },
+      "grapes": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 20.0
+      },
+      "jute": {
+        "precision": 0.95,
+        "recall": 0.95,
+        "f1-score": 0.9500000000000001,
+        "support": 20.0
+      },
+      "kidneybeans": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 20.0
+      },
+      "lentil": {
+        "precision": 0.8181818181818182,
+        "recall": 0.9,
+        "f1-score": 0.8571428571428572,
+        "support": 20.0
+      },
+      "maize": {
+        "precision": 0.9523809523809523,
+        "recall": 1.0,
+        "f1-score": 0.975609756097561,
+        "support": 20.0
+      },
+      "mango": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 20.0
+      },
+      "mothbeans": {
+        "precision": 0.8260869565217391,
+        "recall": 0.95,
+        "f1-score": 0.8837209302325583,
+        "support": 20.0
+      },
+      "mungbean": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 20.0
+      },
+      "muskmelon": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 20.0
+      },
+      "orange": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 20.0
+      },
+      "papaya": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 20.0
+      },
+      "pigeonpeas": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 20.0
+      },
+      "pomegranate": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 20.0
+      },
+      "rice": {
+        "precision": 1.0,
+        "recall": 0.95,
+        "f1-score": 0.9743589743589743,
+        "support": 20.0
+      },
+      "watermelon": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 20.0
+      },
+      "accuracy": 0.975,
+      "macro avg": {
+        "precision": 0.9772286672484302,
+        "recall": 0.975,
+        "f1-score": 0.9745441675315554,
+        "support": 440.0
+      },
+      "weighted avg": {
+        "precision": 0.9772286672484302,
+        "recall": 0.975,
+        "f1-score": 0.9745441675315555,
+        "support": 440.0
+      }
+    }
+  },
+  "feature_importance": {
+    "N": 0.1407,
+    "P": 0.2292,
+    "K": 0.1104,
+    "temperature": 0.0,
+    "humidity": 0.2016,
+    "ph": 0.0052,
+    "rainfall": 0.3129
+  },
+  "validation_ranges": {
+    "N": {
+      "min": 0,
+      "max": 155
+    },
+    "P": {
+      "min": 0,
+      "max": 160
+    },
+    "K": {
+      "min": 0,
+      "max": 226
+    },
+    "temperature": {
+      "min": 5.34,
+      "max": 47.16
+    },
+    "humidity": {
+      "min": 5.69,
+      "max": 100.0
+    },
+    "ph": {
+      "min": 2.86,
+      "max": 10.58
+    },
+    "rainfall": {
+      "min": 0.0,
+      "max": 326.4
+    }
+  },
+  "class_means": {
+    "apple": {
+      "N": 20.8,
+      "P": 134.22,
+      "K": 199.89,
+      "temperature": 22.63,
+      "humidity": 92.33,
+      "ph": 5.93,
+      "rainfall": 112.65
+    },
+    "banana": {
+      "N": 100.23,
+      "P": 82.01,
+      "K": 50.05,
+      "temperature": 27.38,
+      "humidity": 80.36,
+      "ph": 5.98,
+      "rainfall": 104.63
+    },
+    "blackgram": {
+      "N": 40.02,
+      "P": 67.47,
+      "K": 19.24,
+      "temperature": 29.97,
+      "humidity": 65.12,
+      "ph": 7.13,
+      "rainfall": 67.88
+    },
+    "chickpea": {
+      "N": 40.09,
+      "P": 67.79,
+      "K": 79.92,
+      "temperature": 18.87,
+      "humidity": 16.86,
+      "ph": 7.34,
+      "rainfall": 80.06
+    },
+    "coconut": {
+      "N": 21.98,
+      "P": 16.93,
+      "K": 30.59,
+      "temperature": 27.41,
+      "humidity": 94.84,
+      "ph": 5.98,
+      "rainfall": 175.69
+    },
+    "coffee": {
+      "N": 101.2,
+      "P": 28.74,
+      "K": 29.94,
+      "temperature": 25.54,
+      "humidity": 58.87,
+      "ph": 6.79,
+      "rainfall": 158.07
+    },
+    "cotton": {
+      "N": 117.77,
+      "P": 46.24,
+      "K": 19.56,
+      "temperature": 23.99,
+      "humidity": 79.84,
+      "ph": 6.91,
+      "rainfall": 80.4
+    },
+    "grapes": {
+      "N": 23.18,
+      "P": 132.53,
+      "K": 200.11,
+      "temperature": 23.85,
+      "humidity": 81.88,
+      "ph": 6.03,
+      "rainfall": 69.61
+    },
+    "jute": {
+      "N": 78.4,
+      "P": 46.86,
+      "K": 39.99,
+      "temperature": 24.96,
+      "humidity": 79.64,
+      "ph": 6.73,
+      "rainfall": 174.79
+    },
+    "kidneybeans": {
+      "N": 20.75,
+      "P": 67.54,
+      "K": 20.05,
+      "temperature": 20.12,
+      "humidity": 21.61,
+      "ph": 5.75,
+      "rainfall": 105.92
+    },
+    "lentil": {
+      "N": 18.77,
+      "P": 68.36,
+      "K": 19.41,
+      "temperature": 24.51,
+      "humidity": 64.8,
+      "ph": 6.93,
+      "rainfall": 45.68
+    },
+    "maize": {
+      "N": 77.76,
+      "P": 48.44,
+      "K": 19.79,
+      "temperature": 22.39,
+      "humidity": 65.09,
+      "ph": 6.25,
+      "rainfall": 84.77
+    },
+    "mango": {
+      "N": 20.07,
+      "P": 27.18,
+      "K": 29.92,
+      "temperature": 31.21,
+      "humidity": 50.16,
+      "ph": 5.77,
+      "rainfall": 94.7
+    },
+    "mothbeans": {
+      "N": 21.44,
+      "P": 48.01,
+      "K": 20.23,
+      "temperature": 28.19,
+      "humidity": 53.16,
+      "ph": 6.83,
+      "rainfall": 51.2
+    },
+    "mungbean": {
+      "N": 20.99,
+      "P": 47.28,
+      "K": 19.87,
+      "temperature": 28.53,
+      "humidity": 85.5,
+      "ph": 6.72,
+      "rainfall": 48.4
+    },
+    "muskmelon": {
+      "N": 100.32,
+      "P": 17.72,
+      "K": 50.08,
+      "temperature": 28.66,
+      "humidity": 92.34,
+      "ph": 6.36,
+      "rainfall": 24.69
+    },
+    "orange": {
+      "N": 19.58,
+      "P": 16.55,
+      "K": 10.01,
+      "temperature": 22.77,
+      "humidity": 92.17,
+      "ph": 7.02,
+      "rainfall": 110.47
+    },
+    "papaya": {
+      "N": 49.88,
+      "P": 59.05,
+      "K": 50.04,
+      "temperature": 33.72,
+      "humidity": 92.4,
+      "ph": 6.74,
+      "rainfall": 142.63
+    },
+    "pigeonpeas": {
+      "N": 20.73,
+      "P": 67.73,
+      "K": 20.29,
+      "temperature": 27.74,
+      "humidity": 48.06,
+      "ph": 5.79,
+      "rainfall": 149.46
+    },
+    "pomegranate": {
+      "N": 18.87,
+      "P": 18.75,
+      "K": 40.21,
+      "temperature": 21.84,
+      "humidity": 90.13,
+      "ph": 6.43,
+      "rainfall": 107.53
+    },
+    "rice": {
+      "N": 79.89,
+      "P": 47.58,
+      "K": 39.87,
+      "temperature": 23.69,
+      "humidity": 82.27,
+      "ph": 6.43,
+      "rainfall": 236.18
+    },
+    "watermelon": {
+      "N": 99.42,
+      "P": 17.0,
+      "K": 50.22,
+      "temperature": 25.59,
+      "humidity": 85.16,
+      "ph": 6.5,
+      "rainfall": 50.79
+    }
+  }
+}
