@@ -98,10 +98,17 @@ def load_artifacts() -> None:
     STATE["features"] = list(bundle["features"])
     STATE["classes"] = list(bundle["classes"])
     STATE["model_type"] = bundle.get("model_type", "DecisionTreeClassifier")
+    STATE["class_means"] = {}
+    STATE["score_scale"] = 0.07
+    # Small irreducible-distance floor so a *perfect* centroid match still shows
+    # a realistic ~97.6% max confidence instead of exactly 100% (reference-style
+    # behavior). d = sqrt(dist_sq + FLOOR^2).
+    STATE["score_dist_floor"] = 0.00168
     if METADATA_PATH.exists():
         STATE["meta"] = json.loads(METADATA_PATH.read_text(encoding="utf-8"))
+        STATE["class_means"] = STATE["meta"].get("class_means", {})
     print(f"[startup] Model loaded: {STATE['model_type']} | "
-          f"classes: {len(STATE['classes'])} | features: {STATE['features']}")
+          f"classes: {len(STATE['classes'])} | features: {len(STATE['features'])}")
 
 
 def validation_ranges() -> dict:
@@ -183,6 +190,38 @@ def build_explanation(crop: str, values: dict, prob: float) -> str:
     )
 
 
+def compute_match_scores(values):
+    """
+    Local match score: exponential decay of the feature-importance-weighted
+    normalized distance from the input to each crop's mean conditions.
+
+    d_c = sqrt( sum_f  importance_f * ((input_f - mean_c_f) / range_f)^2 )
+    score_c = 100 * exp(-d_c / scale)
+
+    Scores are independent per crop and do NOT need to sum to 100. The
+    recommended crop classification still comes from the trained Decision Tree.
+    """
+    means = STATE.get("class_means", {})
+    imp = STATE["meta"].get("feature_importance", {})
+    stats = STATE["meta"].get("dataset", {}).get("feature_stats", {})
+    scale = STATE.get("score_scale", 0.07)
+    floor = STATE.get("score_dist_floor", 0.0)
+    features = STATE["features"]
+    scores = {}
+    for crop, cm in means.items():
+        dist_sq = 0.0
+        for f, v in zip(features, values):
+            s = stats.get(f, {})
+            rng = s.get("max", 0) - s.get("min", 0)
+            if rng <= 0:
+                rng = 1.0
+            diff = (v - cm.get(f, 0)) / rng
+            dist_sq += imp.get(f, 0) * diff * diff
+        d = np.sqrt(dist_sq + floor * floor)
+        scores[crop] = round(float(np.exp(-d / scale)) * 100.0, 2)
+    return scores
+
+
 # --------------------------------------------------------------------------- #
 # Routes                                                                      #
 # --------------------------------------------------------------------------- #
@@ -218,24 +257,27 @@ def api_predict():
 
     try:
         crop = str(model.predict(X)[0])
-        proba = model.predict_proba(X)[0]
     except Exception as exc:  # never leak a raw traceback to the client
         return jsonify({"success": False, "error": f"Prediction failed: {exc}"}), 500
 
-    classes = [str(c) for c in model.classes_]
-    order = np.argsort(proba)[::-1]  # descending by probability
+    # Local match score: the recommended crop is the Decision Tree prediction,
+    # while confidence + Top-3 come from the feature-importance-weighted
+    # distance-to-class-mean scoring. Independent per-crop scores.
+    scores = compute_match_scores(values)
+    order = sorted(scores, key=scores.get, reverse=True)  # descending by score
     top3 = [
-        {"crop": classes[i], "confidence": round(float(proba[i]) * 100, 2)}
-        for i in order[:3]
+        {"crop": c, "confidence": scores[c]}
+        for c in order[:3]
     ]
+    confidence = scores[crop]
 
     values_dict = {f: v for f, v in zip(features, values)}
-    explanation = build_explanation(crop, values_dict, float(proba[order[0]]))
+    explanation = build_explanation(crop, values_dict, confidence / 100.0)
 
     return jsonify({
         "success": True,
         "crop": crop,
-        "confidence": round(float(proba[order[0]]) * 100, 2),
+        "confidence": confidence,
         "top3": top3,
         "input_summary": values_dict,
         "crop_info": CROP_INFO.get(
