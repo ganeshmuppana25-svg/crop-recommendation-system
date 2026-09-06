@@ -53,6 +53,40 @@ python app.py
 # 3. Open http://127.0.0.1:5000
 ```
 
+## Deploy on Render (free)
+
+This repo includes a `Procfile` and `render.yaml` for one-click deployment.
+`app.py` loads the model at import time and uses the `PORT` env var, so it works
+under gunicorn on Render out of the box.
+
+### Option A — Blueprint (one click, recommended)
+
+1. Push this repo to GitHub (already done).
+2. Go to [dashboard.render.com](https://dashboard.render.com) → **New +** → **Blueprint**.
+3. Paste the GitHub repo: `https://github.com/ganeshmuppana25-svg/crop-recommendation-system`
+4. Render reads `render.yaml` and creates the web service automatically.
+5. Click **Apply** → wait ~2–3 minutes for build → open the `*.onrender.com` URL.
+
+### Option B — Manual web service
+
+1. Dashboard → **New +** → **Web Service**.
+2. Connect your GitHub repo.
+3. Settings:
+   - **Name**: `crop-recommendation-system`
+   - **Runtime**: Python
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app:app`
+   - **Instance Type**: Free
+4. **Create Web Service** → wait for build → open your `*.onrender.com` URL.
+
+### Notes
+
+- Health check path is configured as `/api/health` (Render uses it for the
+  "Live" status).
+- Everything is served by Flask itself — no database or external services.
+- The free instance sleeps after 15 min idle; the first request after waking
+  takes a few extra seconds.
+
 ## Inputs (7 features)
 
 | Feature        | Meaning                  | Typical dataset range |

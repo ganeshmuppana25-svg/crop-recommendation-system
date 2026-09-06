@@ -301,9 +301,15 @@ def server_error(_e):
     return jsonify({"success": False, "error": "Internal server error."}), 500
 
 
+# Load the model + metadata at import time. This is required for production
+# WSGI servers (e.g. gunicorn on Render) which import app:app and never run
+# the __main__ block. It also runs when executing `python app.py` directly.
+load_artifacts()
+
+
 if __name__ == "__main__":
-    load_artifacts()
-    # debug=False keeps the model loaded once; port can be overridden with PORT
+    # Render / cloud hosts set PORT; local default stays 5000.
+    # host=0.0.0.0 makes the app reachable outside the container (Render).
     import os
 
-    app.run(host="127.0.0.1", port=int(os.environ.get("PORT", "5000")), debug=False)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", "5000")), debug=False)
